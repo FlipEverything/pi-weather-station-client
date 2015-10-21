@@ -72,8 +72,5 @@ if __name__ == '__main__':
         else:
             logging.debug(' Timed out before valid GPGLL')
 
-        logging.debug()
-        logging.debug('---')
-        logging.debug()
         time.sleep(1)
 
