@@ -39,7 +39,7 @@ def send_data_to_server(weather, gpgll):
     conn = http.client.HTTPSConnection("lddsystems.eu")
     conn.request("POST", "/weather/api/measure", params, headers)
     response = conn.getresponse()
-    logging.debug('Server responded with ' + response.status + ' ' + response.reason)
+    logging.debug('Server responded with ' + str(response.status) + ' ' + response.reason)
     data = response.read()
     conn.close()
 
