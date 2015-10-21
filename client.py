@@ -20,7 +20,7 @@ def read_gps_data():
 def read_temp_sensor_data():
     logging.debug('Reading weather sensor data...')
     try:
-        output = subprocess.check_output([os.getcwd() + '/bin/read_sensor_temp'])
+        output = subprocess.check_output(['/home/pi/pi-weather-station-client/bin/read_sensor_temp'])
         output = output.decode();
         output = output.split(',');
         weather = dict();
