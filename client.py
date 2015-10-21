@@ -45,7 +45,11 @@ def send_data_to_server(weather, gpgll):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=os.getcwd() +'/client.log',level=logging.DEBUG)
+    logging.basicConfig(filename=os.getcwd() +'/client.log',
+                        filemode='a',
+                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
     logging.debug('Application started')
     prev_weather = dict();
     prev_weather['humidity'] = 0;
