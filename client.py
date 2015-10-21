@@ -39,7 +39,7 @@ def send_data_to_server(weather, gpgll):
     conn = http.client.HTTPSConnection("lddsystems.eu")
     conn.request("POST", "/weather/api/measure", params, headers)
     response = conn.getresponse()
-    logging.debug('  Server responded with', response.status, response.reason)
+    logging.debug('Server responded with ' + response.status + ' ' + response.reason)
     data = response.read()
     conn.close()
 
@@ -58,10 +58,10 @@ if __name__ == '__main__':
     while True:
         gpgll = read_gps_data()
         if (gpgll != 0) :
-            logging.debug('  Latitude: {0:0.8f}, Longitude: {1:0.8f}'.format(gpgll['latitude'], gpgll['longitude']))
+            logging.debug('Latitude: {0:0.8f}, Longitude: {1:0.8f}'.format(gpgll['latitude'], gpgll['longitude']))
 
             weather = read_temp_sensor_data();
-            logging.debug('  Humidity: {0:0.2f}, Temperature: {1:0.2f}'.format(weather['humidity'], weather['temperature']))
+            logging.debug('Humidity: {0:0.2f}, Temperature: {1:0.2f}'.format(weather['humidity'], weather['temperature']))
 
             if weather['humidity'] != prev_weather['humidity'] and weather['temperature'] != prev_weather['temperature'] and gpgll['longitude'] != prev_gpgll['longitude'] and gpgll['latitude'] != prev_gpgll['latitude']:
                 send_data_to_server(weather, gpgll)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
             else:
                 logging.debug('Not sending data - nothing changed.')
         else:
-            logging.debug(' Timed out before valid GPGLL')
+            logging.debug('Timed out before valid GPGLL')
 
         time.sleep(1)
 
