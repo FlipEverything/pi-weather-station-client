@@ -1,8 +1,8 @@
 # Raspberry Pi Weather Station - Client
 
-This repo contains the Raspberry Pi client of the weather station. The python client measures the temperature and the humidity, requests the gps coordinates and sends it to the server's REST API.
+This repo contains the Raspberry Pi client of the weather station. The python client measures the temperature and the humidity, requests the gps coordinates and sends it to the [Server]'s REST API.
 
-[Working demo]
+[Working Demo]
 
 ## Hardware
 
@@ -69,5 +69,5 @@ $ make
    [Server]: <https://github.com/FlipEverything/pi-weather-station-server>
    [wiringPi]: <http://wiringpi.com/>
    [Microstack™ Node libraries for Python 3]: <http://www.farnell.com/datasheets/1860443.pdf>
-   [Working demo]: <https://lddsystems.eu/weather/>
+   [Working Demo]: <https://lddsystems.eu/weather/>
 
