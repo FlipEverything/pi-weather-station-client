@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-import time
 import logging
+import time
 import os
 import subprocess
 import http.client
@@ -8,13 +8,22 @@ import urllib.parse
 import datetime
 import json
 import microstacknode.gps.l80gps
+from socket import timeout
+
+logging.basicConfig(filename='/var/log/pi-weather-station-client.log',
+                        filemode='a',
+                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
 
 def read_gps_data():
     logging.debug('Reading GPS data...');
     try:
         gps = microstacknode.gps.l80gps.L80GPS()
+        logging.debug('Latitude: {0:0.8f}, Longitude: {1:0.8f}'.format(gps.gpgll['latitude'], gps.gpgll['longitude']))
         return gps.gpgll;
     except:
+        logging.error('Timed out before valid GPGLL')
         return 0
 
 def read_temp_sensor_data():
@@ -26,8 +35,10 @@ def read_temp_sensor_data():
         weather = dict();
         weather['humidity'] = float(output[0])
         weather['temperature'] = float(output[1])
+        logging.debug('Humidity: {0:0.2f}, Temperature: {1:0.2f}'.format(weather['humidity'], weather['temperature']))
         return weather
     except subprocess.CalledProcessError as e:
+        logging.error('Cannot read weather sensor')
         raise SystemExit
 
 def send_data_to_server(weather, gpgll):
@@ -36,20 +47,21 @@ def send_data_to_server(weather, gpgll):
                                'temperature': weather['temperature'], 'humidity': weather['humidity']})
     headers = {"Content-type": "application/x-www-form-urlencoded",
                "Accept": "text/plain"}
-    conn = http.client.HTTPSConnection("lddsystems.eu")
-    conn.request("POST", "/weather/api/measure", params, headers)
-    response = conn.getresponse()
-    logging.debug('Server responded with ' + str(response.status) + ' ' + response.reason)
-    data = response.read()
-    conn.close()
+    try:
+        conn = http.client.HTTPSConnection("lddsystems.eu")
+        conn.request("POST", "/weather/api/measure", params, headers)
+        response = conn.getresponse()
+        data = response.read()
+        conn.close()
+    except (HTTPError, URLError) as error:
+        logging.error('Data of %s not retrieved because %s\nURL: %s', name, error, url)
+    except timeout:
+        logging.error('socket timed out - URL %s', url)
+    else:
+        logging.debug('Server responded with ' + str(response.status) + ' ' + response.reason)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=os.getcwd() +'/client.log',
-                        filemode='a',
-                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                        datefmt='%H:%M:%S',
-                        level=logging.DEBUG)
     logging.debug('Application started')
     prev_weather = dict();
     prev_weather['humidity'] = 0;
@@ -62,19 +74,13 @@ if __name__ == '__main__':
     while True:
         gpgll = read_gps_data()
         if (gpgll != 0) :
-            logging.debug('Latitude: {0:0.8f}, Longitude: {1:0.8f}'.format(gpgll['latitude'], gpgll['longitude']))
-
             weather = read_temp_sensor_data();
-            logging.debug('Humidity: {0:0.2f}, Temperature: {1:0.2f}'.format(weather['humidity'], weather['temperature']))
-
             if weather['humidity'] != prev_weather['humidity'] and weather['temperature'] != prev_weather['temperature'] and gpgll['longitude'] != prev_gpgll['longitude'] and gpgll['latitude'] != prev_gpgll['latitude']:
                 send_data_to_server(weather, gpgll)
                 prev_weather = weather;
                 prev_gpgll = gpgll;
             else:
                 logging.debug('Not sending data - nothing changed.')
-        else:
-            logging.debug('Timed out before valid GPGLL')
 
         time.sleep(1)
 
