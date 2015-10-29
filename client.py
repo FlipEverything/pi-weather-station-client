@@ -14,7 +14,7 @@ def read_gps_data():
     try:
         gps = microstacknode.gps.l80gps.L80GPS()
         return gps.gpgll;
-    except microstacknode.gps.l80gps.NMEAPacketNotFoundError as e:
+    except:
         return 0
 
 def read_temp_sensor_data():
