@@ -12,7 +12,7 @@ This repo contains the Raspberry Pi client of the weather station. The python cl
 
 ## Prerequisites
 * [wiringPi]
-* [Microstack Node libraries for Python 3]
+* [Microstack™ Node libraries for Python 3]
 
 ## Connection
 
@@ -68,6 +68,6 @@ $ make
 
    [Server]: <https://github.com/FlipEverything/pi-weather-station-server>
    [wiringPi]: <http://wiringpi.com/>
-   [Microstack Node libraries for Python 3]: <hhttp://www.farnell.com/datasheets/1860443.pdf>
+   [Microstack™ Node libraries for Python 3]: <http://www.farnell.com/datasheets/1860443.pdf>
    [Working demo]: <https://lddsystems.eu/weather/>
 
