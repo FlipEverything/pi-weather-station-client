@@ -5,6 +5,7 @@ import os
 import subprocess
 import http.client
 import urllib.parse
+import urllib.error
 import datetime
 import json
 import microstacknode.gps.l80gps
@@ -53,12 +54,14 @@ def send_data_to_server(weather, gpgll):
         response = conn.getresponse()
         data = response.read()
         conn.close()
-    except (HTTPError, URLError) as error:
+        logging.debug('Server responded with ' + str(response.status) + ' ' + response.reason)
+        return 1;
+    except (urllib.error.HTTPError, urllib.error.URLError) as error:
         logging.error('Data of %s not retrieved because %s\nURL: %s', name, error, url)
     except timeout:
-        logging.error('socket timed out - URL %s', url)
-    else:
-        logging.debug('Server responded with ' + str(response.status) + ' ' + response.reason)
+        logging.error('Socket timed out - URL %s', url)
+    except:
+        logging.error('Socket error')
 
 
 if __name__ == '__main__':
@@ -76,9 +79,9 @@ if __name__ == '__main__':
         if (gpgll != 0) :
             weather = read_temp_sensor_data();
             if weather['humidity'] != prev_weather['humidity'] and weather['temperature'] != prev_weather['temperature'] and gpgll['longitude'] != prev_gpgll['longitude'] and gpgll['latitude'] != prev_gpgll['latitude']:
-                send_data_to_server(weather, gpgll)
-                prev_weather = weather;
-                prev_gpgll = gpgll;
+                if send_data_to_server(weather, gpgll):
+                    prev_weather = weather;
+                    prev_gpgll = gpgll;
             else:
                 logging.debug('Not sending data - nothing changed.')
 
