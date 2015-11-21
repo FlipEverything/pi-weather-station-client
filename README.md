@@ -59,6 +59,7 @@ $ make
 * Better Logging
 * Add config file (ex: server address, sensor pin, etc.)
 * Add command line parameters (ex: --log debug, --no-gps, --server address)
+* If no connection to the host than store the data locally until the server is up again
 
 ### Version
 0.1
